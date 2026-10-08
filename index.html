@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>St Andrews Assignment Generator</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    padding:0;
+    background:#eef0f3;
+    color:#111;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+/* Creator credit — website only; hidden in print */
+.creator-bar{
+    position:relative;
+    width:min(1500px,96vw);
+    margin:18px auto 0;
+    padding:16px 22px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    border:1px solid rgba(49,91,155,.16);
+    border-radius:16px;
+    background:rgba(255,255,255,.88);
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.07),
+        inset 0 1px 0 rgba(255,255,255,.9);
+    backdrop-filter:blur(12px);
+}
+
+.creator-bar::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-35%;
+    width:30%;
+    height:100%;
+    background:linear-gradient(
+        105deg,
+        transparent,
+        rgba(255,255,255,.95),
+        transparent
+    );
+    transform:skewX(-20deg);
+    animation:creatorShine 3.2s ease-in-out infinite;
+}
+
+.creator-bar::after{
+    content:"";
+    position:absolute;
+    left:12%;
+    right:12%;
+    bottom:0;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        #315b9b,
+        #7d5cff,
+        #315b9b,
+        transparent
+    );
+    background-size:200% 100%;
+    animation:creatorGlow 3s linear infinite;
+    box-shadow:0 0 12px rgba(49,91,155,.35);
+}
+
+.creator-brand{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+}
+
+.creator-brand .crafted{
+    font-size:18px;
+    font-weight:500;
+    letter-spacing:.04em;
+    color:#555;
+}
+
+.creator-brand strong{
+    display:inline-block;
+    margin-left:4px;
+    font-size:21px;
+    font-weight:900;
+    letter-spacing:.12em;
+    color:transparent;
+    background:linear-gradient(
+        90deg,
+        #111 0%,
+        #315b9b 35%,
+        #7357d9 55%,
+        #111 75%
+    );
+    background-size:220% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    animation:nameShimmer 3.5s ease-in-out infinite;
+    text-shadow:0 0 18px rgba(49,91,155,.10);
+}
+
+.creator-dot{
+    position:relative;
+    width:11px;
+    height:11px;
+    flex:0 0 11px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#315b9b,#7357d9);
+    box-shadow:
+        0 0 0 5px rgba(49,91,155,.08),
+        0 0 16px rgba(49,91,155,.45);
+    animation:dotPulse 2s ease-in-out infinite;
+}
+
+.creator-dot::after{
+    content:"";
+    position:absolute;
+    inset:-6px;
+    border:1px solid rgba(49,91,155,.25);
+    border-radius:50%;
+    animation:dotRing 2s ease-out infinite;
+}
+
+@keyframes creatorShine{
+    0%{left:-35%;opacity:0}
+    15%{opacity:1}
+    45%{left:110%;opacity:0}
+    100%{left:110%;opacity:0}
+}
+
+@keyframes creatorGlow{
+    0%{background-position:0% 50%}
+    100%{background-position:200% 50%}
+}
+
+@keyframes nameShimmer{
+    0%,100%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+}
+
+@keyframes dotPulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.18)}
+}
+
+@keyframes dotRing{
+    0%{transform:scale(.7);opacity:.8}
+    100%{transform:scale(1.8);opacity:0}
+}
+
+@media(max-width:1050px){
+    .creator-bar{
+        width:calc(100% - 36px);
+    }
+
+    .creator-brand .crafted{
+        font-size:15px;
+    }
+
+    .creator-brand strong{
+        font-size:17px;
+    }
+}
+
+.app{
+    width:min(1500px,96vw);
+    margin:24px auto;
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:28px;
+    align-items:start;
+}
+
+/* ---------- INPUT PANEL ---------- */
+
+.form-card{
+    background:#fff;
+    border:1px solid #ddd;
+    border-radius:18px;
+    padding:22px;
+    box-shadow:0 12px 40px rgba(0,0,0,.08);
+}
+
+.form-card h1{
+    margin:0 0 5px;
+    font-size:21px;
+}
+
+.desc{
+    margin:0 0 20px;
+    color:#777;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.section-title{
+    margin:18px 0 9px;
+    color:#777;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.13em;
+    text-transform:uppercase;
+}
+
+.field{
+    margin-bottom:11px;
+}
+
+.field label{
+    display:block;
+    margin-bottom:5px;
+    font-size:11px;
+    font-weight:700;
+}
+
+.field input{
+    display:block;
+    width:100%;
+    height:40px;
+    padding:0 11px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    outline:none;
+    background:#fff;
+    color:#111;
+    font:14px Arial,sans-serif;
+}
+
+.field input:focus,
+.field select:focus{
+    border-color:#315b9b;
+    box-shadow:0 0 0 3px rgba(49,91,155,.10);
+}
+
+.field select{
+    display:block;
+    width:100%;
+    height:40px;
+    padding:0 10px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    background:#fff;
+    color:#111;
+    font:14px Arial,sans-serif;
+    outline:none;
+}
+
+.format-row{
+    display:grid;
+    grid-template-columns:auto 1fr auto;
+    align-items:end;
+    gap:10px;
+    margin-bottom:7px;
+}
+
+.check-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    height:36px;
+    padding:0 8px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    font-size:12px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.check-label input{
+    width:15px;
+    height:15px;
+    margin:0;
+    accent-color:#315b9b;
+}
+
+.size-control{
+    min-width:0;
+}
+
+.size-control label{
+    display:block;
+    margin-bottom:3px;
+    font-size:9px;
+    font-weight:700;
+    color:#777;
+}
+
+.size-control input[type="range"]{
+    width:100%;
+    height:20px;
+    accent-color:#315b9b;
+}
+
+#formatSizeValue{
+    display:block;
+    text-align:center;
+    margin-top:-2px;
+    font:10px Arial,sans-serif;
+    color:#777;
+}
+
+.reset-format{
+    height:36px;
+    padding:0 9px;
+    background:#f1f1f1;
+    border:1px solid #ddd;
+    color:#333;
+    font-size:10px;
+}
+
+.format-note{
+    color:#777;
+    font:10px/1.4 Arial,sans-serif;
+    margin:4px 0 12px;
+}
+
+.two{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+}
+
+.buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:17px;
+}
+
+button{
+    height:43px;
+    border:0;
+    border-radius:9px;
+    cursor:pointer;
+    font:bold 12px Arial,sans-serif;
+}
+
+.generate{
+    background:#111;
+    color:#fff;
+}
+
+.clear{
+    background:#e9eaec;
+    color:#111;
+}
+
+.print{
+    width:100%;
+    margin-top:8px;
+    background:#315b9b;
+    color:#fff;
+}
+
+.status{
+    height:20px;
+    padding-top:5px;
+    text-align:center;
+    color:#315b9b;
+    font:11px Arial,sans-serif;
+}
+
+.download-title{
+    margin-top:15px;
+    margin-bottom:7px;
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#777;
+}
+
+.download-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:6px;
+}
+
+.download-btn{
+    height:36px;
+    background:#f3f5f8;
+    color:#222;
+    border:1px solid #d9dce1;
+    border-radius:8px;
+    font-size:10px;
+    font-weight:800;
+    transition:.15s ease;
+}
+
+.download-btn:hover{
+    background:#e9edf4;
+    border-color:#315b9b;
+    color:#315b9b;
+    transform:translateY(-1px);
+}
+
+.download-note{
+    margin-top:6px;
+    color:#888;
+    font:9px/1.4 Arial,sans-serif;
+    text-align:center;
+}
+
+.tip{
+    margin-top:12px;
+    color:#777;
+    font:11px/1.5 Arial,sans-serif;
+}
+
+/* ---------- A4 PAGE ---------- */
+
+.preview-wrap{
+    display:flex;
+    justify-content:center;
+    padding-bottom:40px;
+}
+
+.page{
+    position:relative;
+    width:210mm;
+    height:297mm;
+    overflow:hidden;
+    background:#fff;
+    box-shadow:0 20px 65px rgba(0,0,0,.18);
+    font-family:"Times New Roman",Times,serif;
+}
+
+.page-border{
+    position:absolute;
+    top:19mm;
+    right:14mm;
+    bottom:26mm;
+    left:14mm;
+    border:.65mm solid #222;
+}
+
+.page-inner{
+    position:absolute;
+    top:19mm;
+    right:14mm;
+    bottom:26mm;
+    left:14mm;
+}
+
+/* Institution heading */
+.institution{
+    position:absolute;
+    top:12mm;
+    left:10mm;
+    right:10mm;
+    text-align:center;
+    font-family:"Times New Roman",Times,serif;
+    font-size:7.55mm;
+    font-weight:700;
+    line-height:1.16;
+}
+
+/* Logo — deliberately larger, but with its own fixed area */
+.logo{
+    position:absolute;
+    top:43mm;
+    left:50%;
+    width:39mm;
+    height:39mm;
+    transform:translateX(-50%);
+    object-fit:contain;
+}
+
+/* Blue middle section */
+.assignment{
+    position:absolute;
+    top:84mm;
+    left:0;
+    right:0;
+    text-align:center;
+    color:#315b9b;
+    font-size:7mm;
+    font-weight:700;
+    text-decoration:underline;
+    text-decoration-thickness:.35mm;
+    text-underline-offset:1.2mm;
+}
+
+.semester{
+    position:absolute;
+    top:96.5mm;
+    left:0;
+    right:0;
+    text-align:center;
+    color:#315b9b;
+    font-size:7mm;
+    font-weight:700;
+}
+
+.session{
+    position:absolute;
+    top:111mm;
+    left:0;
+    right:0;
+    text-align:center;
+    color:#315b9b;
+    font-size:7mm;
+    font-weight:700;
+}
+
+.course{
+    position:absolute;
+    top:124.5mm;
+    left:8mm;
+    right:8mm;
+    text-align:center;
+    color:#315b9b;
+    font-size:6.05mm;
+    font-weight:700;
+    line-height:1.22;
+}
+
+.course-code{
+    font-size:5.25mm;
+}
+
+.format-text{
+    font-size:var(--custom-size, 100%);
+    font-weight:var(--custom-weight, inherit);
+}
+
+/* Submission section — fixed two-column layout */
+.submission-grid{
+    position:absolute;
+    top:151.5mm;
+    left:9mm;
+    right:9mm;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    column-gap:25mm;
+    align-items:start;
+}
+
+.submission-column{
+    min-width:0;
+}
+
+.heading{
+    display:inline-block;
+    margin-bottom:5.5mm;
+    font-size:5mm;
+    font-weight:700;
+    text-decoration:underline;
+    text-decoration-thickness:.25mm;
+    text-underline-offset:1mm;
+}
+
+.detail{
+    font-size:4.35mm;
+    line-height:1.95;
+    white-space:nowrap;
+}
+
+/* ONLY ONE signature line */
+.sign-row{
+    display:flex;
+    align-items:flex-end;
+    gap:3mm;
+    margin-top:6mm;
+    width:65mm;
+    font-size:4.35mm;
+    line-height:1;
+}
+
+.sign-label{
+    white-space:nowrap;
+}
+
+.sign-line{
+    display:block;
+    width:42mm;
+    height:6mm;
+    border-bottom:.35mm solid #111;
+}
+
+/* Responsive */
+@media(max-width:1050px){
+    .app{
+        grid-template-columns:1fr;
+    }
+
+    .preview-wrap{
+        justify-content:flex-start;
+        overflow:auto;
+    }
+}
+
+/* Print */
+@media print{
+    .creator-bar{
+        display:none !important;
+    }
+
+    @page{
+        size:A4 portrait;
+        margin:0;
+    }
+
+    html,body{
+        width:210mm;
+        height:297mm;
+        background:#fff;
+    }
+
+    .app{
+        display:block;
+        width:auto;
+        margin:0;
+        padding:0;
+    }
+
+    .form-card{
+        display:none;
+    }
+
+    .preview-wrap{
+        display:block;
+        padding:0;
+    }
+
+    .page{
+        width:210mm;
+        height:297mm;
+        margin:0;
+        box-shadow:none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+
+<div class="creator-bar">
+    <div class="creator-brand">
+        <span class="creator-dot"></span>
+        <span class="crafted">Crafted by <strong>MOHIT SINGH</strong></span>
+    </div>
+</div>
+
+<div class="app">
+
+<!-- INPUT PANEL -->
+<section class="form-card">
+
+    <h1>Assignment Front Page</h1>
+    <p class="desc">
+        Fill the boxes below. Your typing stays in the form.
+        Click <b>Generate Front Page</b> when finished.
+    </p>
+
+    <div class="section-title">Assignment</div>
+
+    <div class="field">
+        <label for="assignmentNo">ASSIGNMENT NUMBER</label>
+        <input id="assignmentNo" type="text" value="1">
+    </div>
+
+    <div class="two">
+        <div class="field">
+            <label for="semester">SEMESTER</label>
+            <input id="semester" type="text" value="3SEM">
+        </div>
+
+        <div class="field">
+            <label for="session">SESSION</label>
+            <input id="session" type="text" value="2026-2027">
+        </div>
+    </div>
+
+    <div class="section-title">Course</div>
+
+    <div class="field">
+        <label for="courseName">COURSE NAME</label>
+        <input id="courseName" type="text" placeholder="Enter course name">
+    </div>
+
+    <div class="field">
+        <label for="courseCode">COURSE CODE</label>
+        <input id="courseCode" type="text" placeholder="Enter course code">
+    </div>
+
+    <div class="section-title">Submitted To</div>
+
+    <div class="field">
+        <label for="teacherName">NAME</label>
+        <input id="teacherName" type="text" placeholder="Teacher name">
+    </div>
+
+    <div class="field">
+        <label for="professor">ASSISTANT PROFESSOR</label>
+        <input id="professor" type="text" value="Assistant Professor">
+    </div>
+
+    <div class="section-title">Submitted By</div>
+
+    <div class="field">
+        <label for="studentName">NAME</label>
+        <input id="studentName" type="text" placeholder="Student name">
+    </div>
+
+    <div class="two">
+        <div class="field">
+            <label for="rollNo">ROLL NO.</label>
+            <input id="rollNo" type="text" placeholder="Roll number">
+        </div>
+
+        <div class="field">
+            <label for="semSection">SEM &amp; SECTION</label>
+            <input id="semSection" type="text" placeholder="3rd &amp; A">
+        </div>
+    </div>
+
+    <div class="section-title">Text Formatting</div>
+
+    <div class="field">
+        <label for="formatTarget">TEXT TO FORMAT</label>
+        <select id="formatTarget">
+            <option value="assignmentNo">Assignment Number</option>
+            <option value="semester">Semester</option>
+            <option value="session">Session</option>
+            <option value="courseName">Course Name</option>
+            <option value="courseCode">Course Code</option>
+            <option value="teacherName">Submitted To — Name</option>
+            <option value="professor">Assistant Professor</option>
+            <option value="studentName">Submitted By — Name</option>
+            <option value="rollNo">Roll No.</option>
+            <option value="semSection">Sem & Section</option>
+        </select>
+    </div>
+
+    <div class="format-row">
+        <label class="check-label">
+            <input type="checkbox" id="formatBold">
+            <span>Bold</span>
+        </label>
+
+        <div class="size-control">
+            <label for="formatSize">SIZE</label>
+            <input id="formatSize" type="range" min="50" max="150" value="100" step="5">
+            <span id="formatSizeValue">100%</span>
+        </div>
+
+        <button class="reset-format" type="button" id="resetFormatBtn">Default</button>
+    </div>
+
+    <div class="format-note">
+        Default = the original page size. Formatting is applied only to the selected text.
+    </div>
+
+    <div class="buttons">
+        <button class="generate" type="button" id="generateBtn">Generate Front Page</button>
+        <button class="clear" type="button" id="clearBtn">Clear</button>
+    </div>
+
+    <div class="status" id="status"></div>
+
+    <button class="print" type="button" id="printBtn">
+        Print / Save PDF
+    </button>
+
+    <div class="download-title">Direct Download</div>
+    <div class="download-grid">
+        <button class="download-btn" type="button" id="downloadPdfBtn">PDF</button>
+        <button class="download-btn" type="button" id="downloadPngBtn">PNG</button>
+        <button class="download-btn" type="button" id="downloadJpgBtn">JPG</button>
+        <button class="download-btn" type="button" id="downloadHtmlBtn">HTML</button>
+    </div>
+    <div class="download-note">
+        File names use: <b>First Name + Course Name + Front Page</b>
+    </div>
+
+    <p class="tip">
+        Print settings: A4 · Scale 100% · Margins None · Browser headers/footers OFF.
+    </p>
+
+</section>
+
+
+<!-- A4 PREVIEW -->
+<section class="preview-wrap">
+
+<div class="page">
+
+    <div class="page-border"></div>
+
+    <div class="page-inner">
+
+        <div class="institution">
+            ST. ANDREWS INSTITUTE OF TECHNOLOGY &amp;<br>
+            MANAGEMENT, GURUGRAM
+        </div>
+
+        <img class="logo" src="logo.jpg" alt="St Andrews Institute logo">
+
+        <div class="assignment">
+            ASSIGNMENT <span id="pAssignment" class="format-text">1</span>
+        </div>
+
+        <div class="semester">
+            Semester- <span id="pSemester" class="format-text">3SEM</span>
+        </div>
+
+        <div class="session">
+            Session: <span id="pSession" class="format-text">2026-2027</span>
+        </div>
+
+        <div class="course">
+            COURSE NAME:
+            <span id="pCourseName" class="format-text">________________</span>
+            <br>
+            <span class="course-code">
+                COURSE CODE:
+                <span id="pCourseCode" class="format-text">________________</span>
+            </span>
+        </div>
+
+
+        <!-- THIS IS ONE FIXED TWO-COLUMN BLOCK -->
+        <div class="submission-grid">
+
+            <div class="submission-column">
+
+                <div class="heading">Submitted To:</div>
+
+                <div class="detail">
+                    Name:
+                    <span id="pTeacher" class="format-text">________________</span>
+                </div>
+
+                <div class="detail" id="pProfessor">
+                    Assistant Professor
+                </div>
+
+                <!-- ONE SIGN ONLY -->
+                <div class="sign-row">
+                    <span class="sign-label">Sign:</span>
+                    <span class="sign-line"></span>
+                </div>
+
+            </div>
+
+
+            <div class="submission-column">
+
+                <div class="heading">Submitted by:</div>
+
+                <div class="detail">
+                    Name:
+                    <span id="pStudent" class="format-text">________________</span>
+                </div>
+
+                <div class="detail">
+                    Roll No:
+                    <span id="pRoll" class="format-text">________________</span>
+                </div>
+
+                <div class="detail">
+                    Sem &amp; Section:
+                    <span id="pSemSection" class="format-text">________________</span>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+</div>
+
+
+<script>
+(function(){
+
+    function getValue(id, fallback){
+        var el = document.getElementById(id);
+
+        if(!el){
+            return fallback;
+        }
+
+        var value = el.value.trim();
+
+        return value || fallback;
+    }
+
+
+    var defaultFormats = {
+        assignmentNo: {bold:false, scale:1.00},
+        semester: {bold:false, scale:1.00},
+        session: {bold:false, scale:1.00},
+        courseName: {bold:false, scale:1.00},
+        courseCode: {bold:false, scale:1.00},
+        teacherName: {bold:false, scale:1.00},
+        professor: {bold:false, scale:1.00},
+        studentName: {bold:false, scale:1.00},
+        rollNo: {bold:false, scale:1.00},
+        semSection: {bold:false, scale:1.00}
+    };
+
+    var formats = JSON.parse(JSON.stringify(defaultFormats));
+
+    var targetToOutput = {
+        assignmentNo:"pAssignment",
+        semester:"pSemester",
+        session:"pSession",
+        courseName:"pCourseName",
+        courseCode:"pCourseCode",
+        teacherName:"pTeacher",
+        professor:"pProfessor",
+        studentName:"pStudent",
+        rollNo:"pRoll",
+        semSection:"pSemSection"
+    };
+
+    function applyFormat(){
+        var target = document.getElementById("formatTarget").value;
+        var outputId = targetToOutput[target];
+        var output = document.getElementById(outputId);
+        var f = formats[target];
+
+        output.style.fontWeight = f.bold ? "700" : "";
+        output.style.fontSize = (f.scale * 100) + "%";
+
+        document.getElementById("formatBold").checked = f.bold;
+        document.getElementById("formatSize").value = Math.round(f.scale * 100);
+        document.getElementById("formatSizeValue").textContent =
+            Math.round(f.scale * 100) + "%";
+    }
+
+    function saveCurrentFormat(){
+        var target = document.getElementById("formatTarget").value;
+        formats[target].bold = document.getElementById("formatBold").checked;
+        formats[target].scale =
+            Number(document.getElementById("formatSize").value) / 100;
+        applyFormat();
+    }
+
+    document.getElementById("formatTarget").addEventListener("change", applyFormat);
+    document.getElementById("formatBold").addEventListener("change", saveCurrentFormat);
+    document.getElementById("formatSize").addEventListener("input", saveCurrentFormat);
+
+    document.getElementById("resetFormatBtn").addEventListener("click", function(){
+        var target = document.getElementById("formatTarget").value;
+        formats[target] = {bold:false, scale:1.00};
+        applyFormat();
+    });
+
+    function generatePage(){
+
+        document.getElementById("pAssignment").textContent =
+            getValue("assignmentNo","1");
+
+        document.getElementById("pSemester").textContent =
+            getValue("semester"," ");
+
+        document.getElementById("pSession").textContent =
+            getValue("session"," ");
+
+        document.getElementById("pCourseName").textContent =
+            getValue("courseName","________________");
+
+        document.getElementById("pCourseCode").textContent =
+            getValue("courseCode","________________");
+
+        document.getElementById("pTeacher").textContent =
+            getValue("teacherName","________________");
+
+        document.getElementById("pProfessor").textContent =
+            getValue("professor","Assistant Professor");
+
+        document.getElementById("pStudent").textContent =
+            getValue("studentName","________________");
+
+        document.getElementById("pRoll").textContent =
+            getValue("rollNo","________________");
+
+        document.getElementById("pSemSection").textContent =
+            getValue("semSection","________________");
+
+
+        var status = document.getElementById("status");
+
+        status.textContent = "Front page generated ✓";
+
+        setTimeout(function(){
+            status.textContent = "";
+        },1600);
+    }
+
+
+    document.getElementById("generateBtn").addEventListener(
+        "click",
+        generatePage
+    );
+
+
+    document.getElementById("clearBtn").addEventListener(
+        "click",
+        function(){
+
+            document.getElementById("assignmentNo").value = "1";
+            document.getElementById("semester").value = "3SEM";
+            document.getElementById("session").value = "2026-2027";
+
+            document.getElementById("courseName").value = "";
+            document.getElementById("courseCode").value = "";
+
+            document.getElementById("teacherName").value = "";
+            document.getElementById("professor").value = "Assistant Professor";
+
+            document.getElementById("studentName").value = "";
+            document.getElementById("rollNo").value = "";
+            document.getElementById("semSection").value = "";
+
+            Object.keys(defaultFormats).forEach(function(key){
+                formats[key] = {bold:false, scale:1.00};
+            });
+            applyFormat();
+
+            document.getElementById("status").textContent = "Form cleared";
+
+            setTimeout(function(){
+                document.getElementById("status").textContent = "";
+            },1200);
+        }
+    );
+
+
+
+    /* ---------- DIRECT DOWNLOADS ---------- */
+
+    function safeFilePart(value){
+        value = (value || "").trim();
+        if(!value) return "";
+        return value
+            .replace(/[\\/:*?"<>|]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+    }
+
+    function downloadBaseName(){
+        var first = getValue("studentName","Student").split(/\s+/)[0];
+        var course = getValue("courseName","Assignment");
+        first = safeFilePart(first);
+        course = safeFilePart(course);
+        return first + "'s " + course + " Front Page";
+    }
+
+    function svgEscape(value){
+        return String(value)
+            .replace(/&/g,"&amp;")
+            .replace(/</g,"&lt;")
+            .replace(/>/g,"&gt;")
+            .replace(/"/g,"&quot;")
+            .replace(/'/g,"&apos;");
+    }
+
+    function mm(v, width){
+        return v * (width / 210);
+    }
+
+    function textStyle(key, baseMm){
+        var f = formats[key] || {bold:false,scale:1};
+        var size = baseMm * f.scale;
+        return {
+            size:size,
+            weight:f.bold ? 700 : 700
+        };
+    }
+
+    function getLogoData(){
+        return new Promise(function(resolve){
+            var img = new Image();
+            img.onload = function(){
+                try{
+                    var c=document.createElement("canvas");
+                    c.width=img.naturalWidth || 500;
+                    c.height=img.naturalHeight || 500;
+                    var x=c.getContext("2d");
+                    x.drawImage(img,0,0);
+                    resolve(c.toDataURL("image/jpeg",.92));
+                }catch(e){
+                    resolve("");
+                }
+            };
+            img.onerror=function(){resolve("");};
+            img.src="logo.jpg";
+        });
+    }
+
+    async function buildPageSvg(){
+        var W=1240, H=1754;
+        var sx=W/210, sy=H/297;
+
+        function X(mmVal){return mmVal*sx;}
+        function Y(mmVal){return mmVal*sy;}
+
+        var blue="#315b9b";
+        var parts=[];
+        parts.push('<svg xmlns="http://www.w3.org/2000/svg" width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'">');
+        parts.push('<rect width="100%" height="100%" fill="#fff"/>');
+        parts.push('<rect x="'+X(14)+'" y="'+Y(19)+'" width="'+X(182)+'" height="'+Y(252)+'" fill="none" stroke="#222" stroke-width="'+X(.65)+'"/>');
+
+        var serif="Times New Roman, Times, serif";
+
+        // Institution
+        parts.push('<text x="'+X(105)+'" y="'+Y(31)+'" text-anchor="middle" font-family="'+serif+'" font-size="'+X(7.55)+'px" font-weight="700">ST. ANDREWS INSTITUTE OF TECHNOLOGY &amp;</text>');
+        parts.push('<text x="'+X(105)+'" y="'+Y(39.7)+'" text-anchor="middle" font-family="'+serif+'" font-size="'+X(7.55)+'px" font-weight="700">MANAGEMENT, GURUGRAM</text>');
+
+        // Logo
+        var logo=await getLogoData();
+        if(logo){
+            parts.push('<image href="'+logo+'" x="'+X(85.5)+'" y="'+Y(43)+'" width="'+X(39)+'" height="'+X(39)+'" preserveAspectRatio="xMidYMid meet"/>');
+        }
+
+        // Helper
+        function centered(text, yMm, sizeMm, key, underline){
+            var st=textStyle(key,sizeMm);
+            parts.push('<text x="'+X(105)+'" y="'+Y(yMm)+'" text-anchor="middle" font-family="'+serif+'" font-size="'+X(st.size)+'px" font-weight="'+st.weight+'" fill="'+blue+'"'+(underline?' text-decoration="underline"':'')+'>'+svgEscape(text)+'</text>');
+        }
+
+        centered("ASSIGNMENT "+getValue("assignmentNo","1"),91.0,7,"assignmentNo",true);
+        centered("Semester- "+getValue("semester"," "),103.2,7,"semester",false);
+        centered("Session: "+getValue("session"," "),117.7,7,"session",false);
+
+        var cn=textStyle("courseName",6.05);
+        parts.push('<text x="'+X(105)+'" y="'+Y(133.5)+'" text-anchor="middle" font-family="'+serif+'" font-size="'+X(cn.size)+'px" font-weight="'+cn.weight+'" fill="'+blue+'">COURSE NAME: '+svgEscape(getValue("courseName","________________"))+'</text>');
+
+        var cc=textStyle("courseCode",5.25);
+        parts.push('<text x="'+X(105)+'" y="'+Y(141.2)+'" text-anchor="middle" font-family="'+serif+'" font-size="'+X(cc.size)+'px" font-weight="'+cc.weight+'" fill="'+blue+'">COURSE CODE: '+svgEscape(getValue("courseCode","________________"))+'</text>');
+
+        // Submission section
+        var leftX=23, rightX=104, topY=166.8;
+        parts.push('<text x="'+X(leftX)+'" y="'+Y(topY)+'" font-family="'+serif+'" font-size="'+X(5)+'px" font-weight="700" text-decoration="underline">Submitted To:</text>');
+        parts.push('<text x="'+X(rightX)+'" y="'+Y(topY)+'" font-family="'+serif+'" font-size="'+X(5)+'px" font-weight="700" text-decoration="underline">Submitted by:</text>');
+
+        var teacher=textStyle("teacherName",4.35);
+        parts.push('<text x="'+X(leftX)+'" y="'+Y(178.2)+'" font-family="'+serif+'" font-size="'+X(teacher.size)+'px" font-weight="'+teacher.weight+'">Name: '+svgEscape(getValue("teacherName","________________"))+'</text>');
+
+        var prof=textStyle("professor",4.35);
+        parts.push('<text x="'+X(leftX)+'" y="'+Y(186.7)+'" font-family="'+serif+'" font-size="'+X(prof.size)+'px" font-weight="'+prof.weight+'">'+svgEscape(getValue("professor","Assistant Professor"))+'</text>');
+
+        parts.push('<text x="'+X(leftX)+'" y="'+Y(201.8)+'" font-family="'+serif+'" font-size="'+X(4.35)+'px">Sign:</text>');
+        parts.push('<line x1="'+X(leftX+13)+'" y1="'+Y(201.8)+'" x2="'+X(leftX+55)+'" y2="'+Y(201.8)+'" stroke="#111" stroke-width="'+X(.35)+'"/>');
+
+        var student=textStyle("studentName",4.35);
+        var roll=textStyle("rollNo",4.35);
+        var sem=textStyle("semSection",4.35);
+
+        parts.push('<text x="'+X(rightX)+'" y="'+Y(178.2)+'" font-family="'+serif+'" font-size="'+X(student.size)+'px" font-weight="'+student.weight+'">Name: '+svgEscape(getValue("studentName","________________"))+'</text>');
+        parts.push('<text x="'+X(rightX)+'" y="'+Y(186.7)+'" font-family="'+serif+'" font-size="'+X(roll.size)+'px" font-weight="'+roll.weight+'">Roll No: '+svgEscape(getValue("rollNo","________________"))+'</text>');
+        parts.push('<text x="'+X(rightX)+'" y="'+Y(195.2)+'" font-family="'+serif+'" font-size="'+X(sem.size)+'px" font-weight="'+sem.weight+'">Sem &amp; Section: '+svgEscape(getValue("semSection","________________"))+'</text>');
+
+        parts.push('</svg>');
+        return parts.join("");
+    }
+
+    function triggerDownload(blob, filename){
+        var url=URL.createObjectURL(blob);
+        var a=document.createElement("a");
+        a.href=url;
+        a.download=filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(function(){URL.revokeObjectURL(url);},1500);
+    }
+
+    async function downloadHtml(){
+        var name=downloadBaseName()+".html";
+        var clone=document.documentElement.cloneNode(true);
+
+        // Remove creator/input UI from the downloaded document; keep only the front page.
+        var app=clone.querySelector(".app");
+        if(app){
+            var preview=app.querySelector(".preview-wrap");
+            var newBody=document.createElement("body");
+            if(preview) newBody.appendChild(preview.cloneNode(true));
+            clone.querySelector("body").replaceChildren(newBody.firstElementChild || document.createElement("div"));
+        }
+
+        var blob=new Blob(["<!DOCTYPE html>\n",clone.outerHTML],{type:"text/html;charset=utf-8"});
+        triggerDownload(blob,name);
+    }
+
+    async function renderCanvas(){
+        var svg=await buildPageSvg();
+        var blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});
+        var url=URL.createObjectURL(blob);
+
+        return new Promise(function(resolve,reject){
+            var img=new Image();
+            img.onload=function(){
+                var canvas=document.createElement("canvas");
+                canvas.width=2480;
+                canvas.height=3508;
+                var ctx=canvas.getContext("2d");
+                ctx.fillStyle="#fff";
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(img,0,0,canvas.width,canvas.height);
+                URL.revokeObjectURL(url);
+                resolve(canvas);
+            };
+            img.onerror=function(e){
+                URL.revokeObjectURL(url);
+                reject(e);
+            };
+            img.src=url;
+        });
+    }
+
+    async function downloadImage(kind){
+        var canvas=await renderCanvas();
+        var mime=kind==="jpg" ? "image/jpeg" : "image/png";
+        var ext=kind==="jpg" ? "jpg" : "png";
+        canvas.toBlob(function(blob){
+            triggerDownload(blob,downloadBaseName()+"."+ext);
+        },mime,0.95);
+    }
+
+    function canvasJpegBytes(canvas){
+        var data=canvas.toDataURL("image/jpeg",.94);
+        var raw=atob(data.split(",")[1]);
+        var arr=new Uint8Array(raw.length);
+        for(var i=0;i<raw.length;i++) arr[i]=raw.charCodeAt(i);
+        return arr;
+    }
+
+    function buildPdfFromJpeg(jpeg,width,height){
+        function enc(s){return new TextEncoder().encode(s);}
+        function concat(parts){
+            var total=parts.reduce(function(n,p){return n+p.length},0);
+            var out=new Uint8Array(total), pos=0;
+            parts.forEach(function(p){out.set(p,pos);pos+=p.length;});
+            return out;
+        }
+
+        var objects=[];
+        objects.push(enc("<< /Type /Catalog /Pages 2 0 R >>"));
+        objects.push(enc("<< /Type /Pages /Kids [3 0 R] /Count 1 >>"));
+        objects.push(enc("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /XObject << /Im1 5 0 R >> >> /Contents 4 0 R >>"));
+        var stream="q\n595.28 0 0 841.89 0 0 cm\n/Im1 Do\nQ\n";
+        objects.push(enc("<< /Length "+stream.length+" >>\nstream\n"+stream+"endstream"));
+        objects.push(jpeg);
+        objects.push(enc("<< /Type /XObject /Subtype /Image /Width "+width+" /Height "+height+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+jpeg.length+" >>\nstream\n"));
+        // Object 5 needs dictionary + stream bytes; handle specially below.
+        var finalParts=[enc("%PDF-1.4\n%âãÏÓ\n")];
+        var offsets=[0];
+        var current=finalParts[0].length;
+
+        // Objects 1-4
+        for(var n=0;n<4;n++){
+            offsets[n+1]=current;
+            var head=enc((n+1)+" 0 obj\n");
+            var body=objects[n];
+            var tail=enc("\nendobj\n");
+            finalParts.push(head,body,tail);
+            current+=head.length+body.length+tail.length;
+        }
+
+        // Object 5 image
+        offsets[5]=current;
+        var dict=enc("5 0 obj\n<< /Type /XObject /Subtype /Image /Width "+width+" /Height "+height+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+jpeg.length+" >>\nstream\n");
+        var end=enc("\nendstream\nendobj\n");
+        finalParts.push(dict,jpeg,end);
+        current+=dict.length+jpeg.length+end.length;
+
+        var xref=current;
+        var xrefText="xref\n0 6\n0000000000 65535 f \n";
+        for(var k=1;k<=5;k++){
+            xrefText+=String(offsets[k]).padStart(10,"0")+" 00000 n \n";
+        }
+        xrefText+="trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n"+xref+"\n%%EOF";
+        finalParts.push(enc(xrefText));
+        return concat(finalParts);
+    }
+
+    async function downloadPdf(){
+        var canvas=await renderCanvas();
+        var jpeg=canvasJpegBytes(canvas);
+        var pdfBytes=buildPdfFromJpeg(jpeg,canvas.width,canvas.height);
+        triggerDownload(new Blob([pdfBytes],{type:"application/pdf"}),downloadBaseName()+".pdf");
+    }
+
+    document.getElementById("downloadPdfBtn").addEventListener("click",function(){
+        downloadPdf().catch(function(){ alert("PDF creation failed. Please use Print / Save PDF."); });
+    });
+
+    document.getElementById("downloadPngBtn").addEventListener("click",function(){
+        downloadImage("png").catch(function(){ alert("PNG creation failed."); });
+    });
+
+    document.getElementById("downloadJpgBtn").addEventListener("click",function(){
+        downloadImage("jpg").catch(function(){ alert("JPG creation failed."); });
+    });
+
+    document.getElementById("downloadHtmlBtn").addEventListener("click",function(){
+        downloadHtml().catch(function(){ alert("HTML download failed."); });
+    });
+
+    document.getElementById("printBtn").addEventListener(
+        "click",
+        function(){
+            window.print();
+        }
+    );
+
+
+    generatePage();
+    applyFormat();
+
+})();
+</script>
+
+</body>
+</html>
